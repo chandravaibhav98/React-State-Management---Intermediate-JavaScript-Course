@@ -1,3 +1,5 @@
 -   useState
 -   useReducer
     -   dispatch
+-   useMemo & useCallback
+-   useEffect
