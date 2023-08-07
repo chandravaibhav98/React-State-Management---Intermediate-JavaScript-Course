@@ -3,6 +3,22 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 
+const Stopwatch = () => {
+	const [time, setTime] = useState(0);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setTime((t) => {
+				console.log(t);
+				return t + 1;
+			});
+		}, 1000);
+		return () => clearInterval(interval);
+	}, []);
+
+	return <div>Time: {time}</div>;
+};
+
 function App() {
 	const [names, setNames] = useState([]);
 
@@ -12,16 +28,13 @@ function App() {
 			.then((data) => setNames(data));
 	}, []);
 
-	const [selectedName, setSelectedName] = useState(null);
 	const [selectedNameDetails, setSelectedNameDetails] = useState(null);
 
-	useEffect(() => {
-        if (selectedName) {
-            fetch(`/${selectedName}.json`)
-				.then((response) => response.json())
-				.then((data) => setSelectedNameDetails(data));
-        }
-	}, [selectedName]);
+	const onSelectedNameChange = (name) => {
+		fetch(`/${name}.json`)
+			.then((response) => response.json())
+			.then((data) => setSelectedNameDetails(data));
+	};
 
 	return (
 		<div>
@@ -32,11 +45,11 @@ function App() {
 					{names.map((name) => (
 						<button
 							key={name}
-							onClick={() => setSelectedName(name)}>
+							onClick={() => onSelectedNameChange(name)}>
 							{name}
 						</button>
 					))}
-					<h6>{selectedName}</h6>
+					<Stopwatch />
 					<h6>{JSON.stringify(selectedNameDetails)}</h6>
 				</main>
 			</div>
