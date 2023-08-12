@@ -1,4 +1,3 @@
-import './App.css'
 import { PokemonProvider, usePokemon } from "./store";
 
 function SearchBox() {
@@ -12,6 +11,7 @@ function SearchBox() {
     />
   );
 }
+
 
 const PokemonList = () => {
   const { pokemon } = usePokemon();
@@ -38,15 +38,12 @@ const PokemonList = () => {
 
 function App() {
   return (
-      <div>
-        <h1>useContext and Custom Hooks - Pokemon</h1>
-        <PokemonProvider>
-        <div className="mx-auto max-w-3xl">
-            <SearchBox />
-            <PokemonList />
-        </div>
-        </PokemonProvider>
-    </div>
+    <PokemonProvider>
+      <div className="mx-auto max-w-3xl">
+        <SearchBox />
+        <PokemonList />
+      </div>
+    </PokemonProvider>
   );
 }
 

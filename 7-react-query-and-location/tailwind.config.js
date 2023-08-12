@@ -4,8 +4,5 @@ export default {
 	theme: {
 		extend: {},
 	},
-	plugins: [
-    require('tailwindcss'),
-    require('autoprefixer'),
-    ]
+	plugins: [],
 };

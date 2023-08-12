@@ -1,5 +1,8 @@
--   useState
--   useReducer
-    -   dispatch
--   useMemo & useCallback
--   useEffect
+- useState
+- useReducer
+  - dispatch
+- useMemo & useCallback
+- useEffect
+- useRef
+- useContext and CustomHooks
+- React Query and Location

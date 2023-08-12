@@ -1,5 +1,5 @@
 https://github.com/jherr/fcc-state/tree/main
 
 https://www.youtube.com/watch?v=-bEzt5ISACA
-1:06:00
-useRef
+1:41:58
+React-Query and React Location
