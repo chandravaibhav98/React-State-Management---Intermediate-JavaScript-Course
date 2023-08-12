@@ -1,4 +1,11 @@
-import { useState, useEffect,createContext,useContext } from 'react'
+import {
+  useReducer,
+  useEffect,
+  createContext,
+  useContext,
+  useCallback,
+  useMemo,
+} from "react";
 
 interface Pokemon {
   id: number;
@@ -12,16 +19,67 @@ interface Pokemon {
   speed: number;
 }
 
-function usePokemonSource() {
-        const [pokemon, setPokemon] = useState<Pokemon[]>([]);
-        
-        useEffect(() => {
-            fetch('/pokemon.json')
-                .then((response) => response.json())
-                .then((data) => setPokemon(data))
-        }, []);
-        
-        return { pokemon };       
+function usePokemonSource(): {
+  pokemon: Pokemon[];
+  search: string;
+  setSearch: (search: string) => void;
+} {
+  // const [pokemon, setPokemon] = useState<Pokemon[]>([]);
+  // const [search, setSearch] = useState("");
+  type PokemonState = {
+    pokemon: Pokemon[];
+    search: string;
+  };
+  type PokemonAction =
+    | { type: "setPokemon"; payload: Pokemon[] }
+    | { type: "setSearch"; payload: string };
+  const [{ pokemon, search }, dispatch] = useReducer(
+    (state: PokemonState, action: PokemonAction) => {
+      switch (action.type) {
+        case "setPokemon":
+          return { ...state, pokemon: action.payload };
+        case "setSearch":
+          return { ...state, search: action.payload };
+      }
+    },
+    {
+      pokemon: [],
+      search: "",
+    }
+  );
+
+  useEffect(() => {
+    fetch("/pokemon.json")
+      .then((response) => response.json())
+      .then((data) =>
+        dispatch({
+          type: "setPokemon",
+          payload: data,
+        })
+      );
+  }, []);
+
+  const setSearch = useCallback((search: string) => {
+    dispatch({
+      type: "setSearch",
+      payload: search,
+    });
+  }, []);
+
+  const filteredPokemon = useMemo(
+    () =>
+      pokemon
+        .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+        .slice(0, 20),
+    [pokemon, search]
+  );
+
+  const sortedPokemon = useMemo(
+    () => [...filteredPokemon].sort((a, b) => a.name.localeCompare(b.name)),
+    [filteredPokemon]
+  );
+
+  return { pokemon: sortedPokemon, search, setSearch };
 }
 
 const PokemonContext = createContext<ReturnType<typeof usePokemonSource>>(
@@ -29,18 +87,13 @@ const PokemonContext = createContext<ReturnType<typeof usePokemonSource>>(
 );
 
 export function usePokemon() {
-    return useContext(PokemonContext);
+  return useContext(PokemonContext);
 }
 
 export function PokemonProvider({ children }: { children: React.ReactNode }) {
-    return (
-        <div>
-            <PokemonContext.Provider value={usePokemonSource()} >    
-                    <div className='Pokemon'>
-                        {children}
-                    </div>
-                  </PokemonContext.Provider>
-                  <hr />
-        </div>
-    )
- }
+  return (
+    <PokemonContext.Provider value={usePokemonSource()}>
+      {children}
+    </PokemonContext.Provider>
+  );
+}
